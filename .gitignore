@@ -1,1 +1,4 @@
 .env
+cache.json
+audio_files
+converted_audio
