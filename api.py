@@ -44,8 +44,7 @@ def synthesize_or_get_audio():
     audio_file_path = text_to_audio_map.get(text)
     if audio_file_path:
         if os.path.exists(audio_file_path):
-            shutil.copyfile(audio_file_path, os.path.join(ALEXA_FOLDER, 'elevenlabs.mp3'))
-            return jsonify({'audio_file': audio_file_path}), 200
+            return jsonify({'audio_file': os.path.split(audio_file_path)[-1]}), 200
 
     # If audio file not found, synthesize it
     # Charlotte XB0fDUnXU5powFXDhCwa
@@ -77,7 +76,7 @@ def synthesize_or_get_audio():
                 f.write(chunk)
 
     # Convert the audio file using ffmpeg
-    output_file_path = 'converted_audio/{}.mp3'.format(str(uuid.uuid4()))
+    output_file_path =  os.path.join(ALEXA_FOLDER, '{}.mp3'.format(str(uuid.uuid4())))
     try:
         subprocess.run(['ffmpeg', '-y', '-i', file_path, '-ac', '2', '-codec:a', 'libmp3lame', '-b:a', '48k', '-ar', '24000', '-write_xing', '0', '-filter:a', 'volume=10dB', output_file_path], check=True)
     except subprocess.CalledProcessError:
@@ -93,8 +92,7 @@ def synthesize_or_get_audio():
     # Save the updated mapping to the JSON file
     save_mapping_to_file()
 
-    shutil.copyfile(output_file_path, os.path.join(ALEXA_FOLDER, 'elevenlabs.mp3'))
-    return jsonify({'audio_file': output_file_path}), 200
+    return jsonify({'audio_file': os.path.split(output_file_path)[-1]}), 200
 
 # Save the mapping to the JSON file
 def save_mapping_to_file():
