@@ -1,0 +1,14 @@
+{
+    "charlotte": {
+        "id": "XB0fDUnXU5powFXDhCwa",
+        "model_id": "eleven_multilingual_v1",
+        "stability": 0.5,
+        "similarity_boost": 0.75
+    },
+    "rachael": {
+      "id": "21m00Tcm4TlvDq8ikWAM",
+      "model_id": "eleven_multilingual_v2",
+      "stability": 0.5,
+      "similarity_boost": 0.75
+  }
+}
