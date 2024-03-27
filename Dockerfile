@@ -30,6 +30,8 @@ VOLUME /app/homeassistant
 
 # Install required dependencies
 RUN pip install Flask
+RUN pip install requests
+RUN pip install python-dotenv
 
 EXPOSE 5325
 

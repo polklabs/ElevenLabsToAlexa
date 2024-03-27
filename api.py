@@ -17,7 +17,7 @@ assert ELEVENLABS_API_KEY is not None and ELEVENLABS_API_KEY != '', 'ELEVENLABSA
 ALEXA_FOLDER = os.environ.get('ALEXAFOLDER')
 assert ALEXA_FOLDER is not None and ALEXA_FOLDER != '', 'ALEXAFOLDER is empty or not set'
 
-# assert os.path.exists('./data/ffmpeg'), 'ffmpeg does not exist in data directory'
+assert os.path.exists('./data/ffmpeg'), 'ffmpeg does not exist in data directory'
 
 CHUNK_SIZE = 1024
 
@@ -59,10 +59,14 @@ def synthesize_or_get_audio(voice):
     voice = voice_map[voice]
 
     # Look for the audio file path in the mapping
-    audio_file_path = text_to_audio_map[voice['id']][text]
-    if audio_file_path:
-        if os.path.exists(audio_file_path):
-            return jsonify({'audio_file': os.path.split(audio_file_path)[-1]}), 200
+    voiceObj = text_to_audio_map.get(voice['id'])
+    if voiceObj:
+        audio_file_path = voiceObj.get(text)
+        if audio_file_path:
+            if os.path.exists(audio_file_path):
+                return jsonify({'audio_file': os.path.split(audio_file_path)[-1]}), 200
+            else:
+                del voiceObj[text]
 
     # If audio file not found, synthesize it
     url = "https://api.elevenlabs.io/v1/text-to-speech/" + voice['id']
@@ -96,6 +100,7 @@ def synthesize_or_get_audio(voice):
     try:
         subprocess.run(['chmod', '+x', '/data/ffmpeg'], check=True)
         subprocess.run(['./data/ffmpeg', '-y', '-i', file_path, '-ac', '2', '-codec:a', 'libmp3lame', '-b:a', '48k', '-ar', '24000', '-write_xing', '0', '-filter:a', 'volume=10dB', output_file_path], check=True)
+        # subprocess.run(['ffmpeg', '-y', '-i', file_path, '-ac', '2', '-codec:a', 'libmp3lame', '-b:a', '48k', '-ar', '24000', '-write_xing', '0', '-filter:a', 'volume=10dB', output_file_path], check=True)
     except subprocess.CalledProcessError:
         os.remove(file_path)
         return jsonify({'error': 'Failed to convert audio file'}), 500
@@ -104,7 +109,9 @@ def synthesize_or_get_audio(voice):
     os.remove(file_path)
 
     # Update mapping
-    text_to_audio_map[text] = output_file_path
+    if voice['id'] not in text_to_audio_map:
+        text_to_audio_map[voice['id']] = {}
+    text_to_audio_map[voice['id']][text] = output_file_path
 
     # Save the updated mapping to the JSON file
     save_mapping_to_file()
@@ -122,5 +129,5 @@ def cleanText(text):
 
 if __name__ == '__main__':
     # Ensure directories exist
-    os.makedirs('audio_files', exist_ok=True)
+    os.makedirs('./data/audio_files', exist_ok=True)
     app.run(host="0.0.0.0", port=5325)
