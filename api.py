@@ -124,7 +124,7 @@ def save_mapping_to_file():
         json.dump(text_to_audio_map, f)
 
 def cleanText(text):
-    pattern = r'[^a-zA-Z0-9.,!?\' ]'
+    pattern = r'[^a-zA-Z0-9.,!?\'% ]'
     return re.sub(pattern, ' ', text)
 
 if __name__ == '__main__':
