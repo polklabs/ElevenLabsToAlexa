@@ -99,7 +99,7 @@ def synthesize_or_get_audio(voice):
     output_file_path =  os.path.join(ALEXA_FOLDER, '{}.mp3'.format(str(uuid.uuid4())))
     try:
         subprocess.run(['chmod', '+x', '/data/ffmpeg'], check=True)
-        subprocess.run(['./data/ffmpeg', '-y', '-i', file_path, '-ac', '2', '-codec:a', 'libmp3lame', '-b:a', '48k', '-ar', '24000', '-write_xing', '0', '-filter:a', 'volume=10dB', output_file_path], check=True)
+        subprocess.run(['./data/ffmpeg', '-y', '-i', file_path, '-ac', '2', '-codec:a', 'libmp3lame', '-b:a', '48k', '-ar', '24000', '-write_xing', '0', '-filter:a', 'volume=15dB', output_file_path], check=True)
         # subprocess.run(['ffmpeg', '-y', '-i', file_path, '-ac', '2', '-codec:a', 'libmp3lame', '-b:a', '48k', '-ar', '24000', '-write_xing', '0', '-filter:a', 'volume=10dB', output_file_path], check=True)
     except subprocess.CalledProcessError:
         os.remove(file_path)
